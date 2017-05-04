@@ -309,7 +309,6 @@ namespace OpenTK.Platform.SDL2
             for (; str[length] != 0; length++)
                 ;
 
-            //Console.Write(length);
             byte [] byteArray = new byte[length];
             Marshal.Copy(ev.File, byteArray, 0, length);
             string dropString = System.Text.Encoding.UTF8.GetString (byteArray);
