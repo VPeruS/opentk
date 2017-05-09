@@ -778,7 +778,6 @@ namespace OpenTK.Platform.Windows
                     break;
 
                 case WindowMessage.LBUTTONDOWN:
-                    Console.WriteLine("ola");
                     HandleLButtonDown(handle, message, wParam, lParam);
                     break;
 
