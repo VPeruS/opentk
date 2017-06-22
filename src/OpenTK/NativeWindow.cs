@@ -194,6 +194,11 @@ namespace OpenTK
 
         #endregion
 
+        public void GrabCursor(bool grab)
+        {
+            implementation.GrabCursor(grab);
+        }
+
         #endregion
 
         #region Properties

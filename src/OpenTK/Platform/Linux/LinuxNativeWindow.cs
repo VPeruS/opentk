@@ -361,6 +361,11 @@ namespace OpenTK.Platform.Linux
             return new Point(point.X + client.X, point.Y + client.Y);
         }
 
+        public override void GrabCursor(bool grab)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

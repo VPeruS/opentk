@@ -182,6 +182,8 @@ namespace OpenTK
         /// </returns>
         Point PointToScreen(Point point);
 
+        void GrabCursor(bool grab);
+
         /// <summary>
         /// Occurs whenever the window is moved. 
         /// </summary>

@@ -400,21 +400,9 @@ namespace OpenTK.Platform.SDL2
             window.Handle = IntPtr.Zero;
         }
 
-        void GrabCursor(bool grab)
+        public override void GrabCursor(bool grab)
         {
-            SDL.ShowCursor(!grab);
             SDL.SetWindowGrab(window.Handle, grab);
-            SDL.SetRelativeMouseMode(grab);
-            if (!grab)
-            {
-                // Move the cursor to the current position
-                // in order to avoid a sudden jump when it
-                // becomes visible again
-                float scale = Width / (float)Size.Width;
-                SDL.WarpMouseInWindow(window.Handle,
-                    (int)Math.Round(MouseState.X / scale),
-                    (int)Math.Round(MouseState.Y / scale));
-            }
         }
 
         // Hack to force WindowState events to be pumped

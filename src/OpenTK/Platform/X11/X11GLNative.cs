@@ -953,7 +953,7 @@ namespace OpenTK.Platform.X11
 
                             if (Focused && !CursorVisible)
                             {
-                                GrabMouse();
+                            GrabCursor(true);
                             }
                         }
                         break;
@@ -1487,7 +1487,7 @@ namespace OpenTK.Platform.X11
                 {
                     using (new XLock(window.Display))
                     {
-                        UngrabMouse();
+                        GrabCursor(false);
 
                         Point p = PointToScreen(new Point(MouseState.X, MouseState.Y));
                         Mouse.SetPosition(p.X, p.Y);
@@ -1502,25 +1502,27 @@ namespace OpenTK.Platform.X11
                 {
                     using (new XLock(window.Display))
                     {
-                        GrabMouse();
+                        GrabCursor(true);
                         cursor_visible = false;
                     }
                 }
             }
         }
 
-        void GrabMouse()
+        public override void GrabCursor(bool grab)
         {
-            Functions.XGrabPointer(window.Display, window.Handle, false,
-                EventMask.PointerMotionMask | EventMask.ButtonPressMask |
-                EventMask.ButtonReleaseMask,
-                GrabMode.GrabModeAsync, GrabMode.GrabModeAsync,
-                window.Handle, EmptyCursor, IntPtr.Zero);
-        }
-
-        void UngrabMouse()
-        {
-            Functions.XUngrabPointer(window.Display, IntPtr.Zero);
+            if (grab)
+            {
+                Functions.XGrabPointer(window.Display, window.Handle, false,
+                                       EventMask.PointerMotionMask | EventMask.ButtonPressMask |
+                                       EventMask.ButtonReleaseMask,
+                                       GrabMode.GrabModeAsync, GrabMode.GrabModeAsync,
+                                       window.Handle, EmptyCursor, IntPtr.Zero);
+            }
+            else
+            {
+                Functions.XUngrabPointer(window.Display, IntPtr.Zero);
+            }
         }
 
         #endregion

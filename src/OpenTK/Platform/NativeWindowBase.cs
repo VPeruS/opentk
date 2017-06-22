@@ -342,6 +342,8 @@ namespace OpenTK.Platform
 
         public abstract Point PointToScreen(Point point);
 
+        public abstract void GrabCursor(bool grab);
+
         public abstract Icon Icon { get; set; }
 
         public abstract string Title { get; set; }
