@@ -19,9 +19,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommandLine;
-using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
+using Mono.Cecil;
+using StrongNameKeyPair = System.Reflection.StrongNameKeyPair;
 
 namespace OpenTK.Rewrite
 {
@@ -72,6 +73,7 @@ namespace OpenTK.Rewrite
             // We want to keep a valid symbols file (pdb or mdb)
             var read_params = new ReaderParameters();
             var write_params = new WriterParameters();
+            StrongNameKeyPair keypair;
 
             read_params.ReadSymbols = true;
             read_params.ReadWrite = true;
@@ -83,8 +85,8 @@ namespace OpenTK.Rewrite
 
                 using (var fs = new FileStream(absoluteKeyFilePath, FileMode.Open, FileAccess.Read))
                 {
-                    var keypair = new System.Reflection.StrongNameKeyPair(fs);
-                    write_params.StrongNameKeyPair = keypair;
+                    keypair = new StrongNameKeyPair(fs);
+                    // write_params.StrongNameKeyPair = keypair;
                 }
             }
             else
@@ -94,7 +96,7 @@ namespace OpenTK.Rewrite
 
             if (Options.NETStandard)
             {
-                DefaultAssemblyResolver resolver = new DefaultAssemblyResolver();
+                NetCoreResolver resolver = new NetCoreResolver();
                 string searchPath = GetNetstandardRefPath();
                 if (!Directory.Exists(searchPath))
                 {
@@ -172,14 +174,16 @@ namespace OpenTK.Rewrite
 
         private string GetNetstandardRefPath()
         {
+            /*
             string dir = Environment.CurrentDirectory;
             while (!Directory.Exists(Path.Combine(dir, "packages")) && !string.IsNullOrEmpty(dir))
                 dir = dir.Substring(0, dir.LastIndexOf(Path.DirectorySeparatorChar));
 
             if (string.IsNullOrEmpty(dir))
                 return string.Empty;
-
-            return Path.Combine(dir, "packages", "NETStandard.Library.2.0.1", "build", "netstandard2.0", "ref");
+            */
+            return "/opt/dotnet/sdk/NuGetFallbackFolder/netstandard.library/2.0.0/build/netstandard2.0/ref";
+            //return Path.Combine(dir, "packages", "NETStandard.Library.2.0.1", "build", "netstandard2.0", "ref");
         }
 
         private void Rewrite(TypeDefinition type)
