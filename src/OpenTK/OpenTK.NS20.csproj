@@ -7,11 +7,18 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);WIN32;CARBON;X11;SDL2;OPENGL;OPENGLES;MINIMAL</DefineConstants>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="**/*.cs" Exclude="**/*.csproj; **/Platform/Android/*; **/Platform/IPhoneOS/*; **/Graphics/ES31/**" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="CoreCompat.System.Drawing.v2" Version="5.2.0-preview1-r131" />
     <PackageReference Include="Paket" Version="5.114.5" />
   </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet $(MSBuildThisFileDirectory)../Generator.Rewrite/bin/Debug/netcoreapp2.0/Rewrite.dll -a $(OutputPath)OpenTK.dll -debug --netstandard" Condition="$(OS) != 'Windows_NT' and $(Configuration) == 'Debug'" />
   </Target>
