@@ -305,7 +305,8 @@ namespace OpenTK
             return Math.Max(Math.Min(n, max), min);
         }
 
-        private static unsafe int FloatToInt32Bits(float f) {
+        private static unsafe int FloatToInt32Bits(float f)
+        {
             return *((int*)&f);
         }
 
@@ -449,7 +450,5 @@ namespace OpenTK
             double diff = Math.Abs(a - b);
             return diff <= tolerance;
         }
-
-
-            }
+    }
 }
