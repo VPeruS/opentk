@@ -25,7 +25,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading;
 using OpenTK.Graphics;
 using OpenTK.Platform;
 
@@ -67,11 +66,7 @@ namespace OpenTK
     {
         private const double MaxFrequency = 500.0; // Frequency cap for Update/RenderFrame events
 
-        private readonly Stopwatch watchRender = new Stopwatch();
-        private readonly Stopwatch watchUpdate = new Stopwatch();
-        private Thread updateThread;
-
-        private readonly bool isSingleThreaded;
+        private readonly Stopwatch watch = new Stopwatch();
 
         private IGraphicsContext glContext;
 
@@ -166,30 +161,12 @@ namespace OpenTK
         /// <param name="sharedContext">An IGraphicsContext to share resources with.</param>
         public GameWindow(int width, int height, GraphicsMode mode, string title, GameWindowFlags options, DisplayDevice device,
                           int major, int minor, GraphicsContextFlags flags, IGraphicsContext sharedContext)
-            : this(width, height, mode, title, options, device, major, minor, flags, sharedContext, true)
-        {}
-
-        /// <summary>Constructs a new GameWindow with the specified attributes.</summary>
-        /// <param name="width">The width of the GameWindow in pixels.</param>
-        /// <param name="height">The height of the GameWindow in pixels.</param>
-        /// <param name="mode">The OpenTK.Graphics.GraphicsMode of the GameWindow.</param>
-        /// <param name="title">The title of the GameWindow.</param>
-        /// <param name="options">GameWindow options regarding window appearance and behavior.</param>
-        /// <param name="device">The OpenTK.Graphics.DisplayDevice to construct the GameWindow in.</param>
-        /// <param name="major">The major version for the OpenGL GraphicsContext.</param>
-        /// <param name="minor">The minor version for the OpenGL GraphicsContext.</param>
-        /// <param name="flags">The GraphicsContextFlags version for the OpenGL GraphicsContext.</param>
-        /// <param name="sharedContext">An IGraphicsContext to share resources with.</param>
-        /// <param name="isSingleThreaded">Should the update and render frames be fired on the same thread? If false, render and update events will be fired from separate threads.</param>
-        public GameWindow(int width, int height, GraphicsMode mode, string title, GameWindowFlags options, DisplayDevice device,
-                          int major, int minor, GraphicsContextFlags flags, IGraphicsContext sharedContext, bool isSingleThreaded)
             : base(width, height, title, options,
                    mode == null ? GraphicsMode.Default : mode,
                    device == null ? DisplayDevice.Default : device)
         {
             try
             {
-                this.isSingleThreaded = isSingleThreaded;
                 glContext = new GraphicsContext(mode == null ? GraphicsMode.Default : mode, WindowInfo, major, minor, flags);
                 glContext.MakeCurrent(WindowInfo);
                 (glContext as IGraphicsContextInternal).LoadAll();
@@ -357,22 +334,13 @@ namespace OpenTK
                 //Resize += DispatchUpdateAndRenderFrame;
 
                 Debug.Print("Entering main loop.");
-                if (!isSingleThreaded)
-                {
-                    updateThread = new Thread(UpdateThread);
-                    updateThread.Start();
-                }
-                watchRender.Start();
+                watch.Start();
                 while (true)
                 {
                     ProcessEvents();
                     if (Exists && !IsExiting)
                     {
-                        if (isSingleThreaded)
-                        {
-                            DispatchUpdateFrame(watchRender);
-                        }
-                        DispatchRenderFrame();
+                        DispatchUpdateAndRenderFrame(this, EventArgs.Empty);
                     }
                     else
                     {
@@ -382,6 +350,9 @@ namespace OpenTK
             }
             finally
             {
+                Move -= DispatchUpdateAndRenderFrame;
+                Resize -= DispatchUpdateAndRenderFrame;
+
                 if (Exists)
                 {
                     // TODO: Should similar behaviour be retained, possibly on native window level?
@@ -391,30 +362,21 @@ namespace OpenTK
             }
         }
 
-        private void UpdateThread()
-        {
-            OnUpdateThreadStarted(this, new EventArgs());
-            watchUpdate.Start();
-            while (Exists && !IsExiting)
-            {
-                DispatchUpdateFrame(watchUpdate);
-            }
-        }
-
         private double ClampElapsed(double elapsed)
         {
             return MathHelper.Clamp(elapsed, 0.0, 1.0);
         }
 
-        private void DispatchUpdateFrame(Stopwatch watch)
+        private void DispatchUpdateAndRenderFrame(object sender, EventArgs e)
         {
             int is_running_slowly_retries = 4;
             double timestamp = watch.Elapsed.TotalSeconds;
-            double elapsed = ClampElapsed(timestamp - update_timestamp);
+            double elapsed = 0;
 
+            elapsed = ClampElapsed(timestamp - update_timestamp);
             while (elapsed > 0 && elapsed + update_epsilon >= TargetUpdatePeriod)
             {
-                RaiseUpdateFrame(watch, elapsed, ref timestamp);
+                RaiseUpdateFrame(elapsed, ref timestamp);
 
                 // Calculate difference (positive or negative) between
                 // actual elapsed time and target elapsed time. We must
@@ -441,19 +403,15 @@ namespace OpenTK
                     break;
                 }
             }
-        }
 
-        private void DispatchRenderFrame()
-        {
-            double timestamp = watchRender.Elapsed.TotalSeconds;
-            double elapsed = ClampElapsed(timestamp - render_timestamp);
+            elapsed = ClampElapsed(timestamp - render_timestamp);
             if (elapsed > 0 && elapsed >= TargetRenderPeriod)
             {
                 RaiseRenderFrame(elapsed, ref timestamp);
             }
         }
 
-        private void RaiseUpdateFrame(Stopwatch watch, double elapsed, ref double timestamp)
+        private void RaiseUpdateFrame(double elapsed, ref double timestamp)
         {
             // Raise UpdateFrame event
             update_args.Time = elapsed;
@@ -480,7 +438,7 @@ namespace OpenTK
 
             // Update RenderTime property
             render_timestamp = timestamp;
-            timestamp = watchRender.Elapsed.TotalSeconds;
+            timestamp = watch.Elapsed.TotalSeconds;
             render_time = timestamp - render_timestamp;
         }
 
@@ -831,12 +789,6 @@ namespace OpenTK
         /// Occurs when it is time to update a frame.
         /// </summary>
         public event EventHandler<FrameEventArgs> UpdateFrame = delegate { };
-
-        /// <summary>
-        /// If game window is configured to run with a dedicated update thread (by passing isSingleThreaded = false in the constructor),
-        /// occurs when the update thread has started. This would be a good place to initialize thread specific stuff (like setting a synchronization context).
-        /// </summary>
-        public event EventHandler OnUpdateThreadStarted = delegate { };
 
         /// <summary>
         /// Override to add custom cleanup logic.

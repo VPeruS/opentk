@@ -315,9 +315,10 @@ namespace OpenTK
         /// <returns>A new Half2 instance.</returns>
         public static Vector2h FromBytes(byte[] value, int startIndex)
         {
-            return new Vector2h(
-                Half.FromBytes(value, startIndex),
-                Half.FromBytes(value, startIndex + 2));
+            Vector2h h2 = new Vector2h();
+            h2.X = Half.FromBytes(value, startIndex);
+            h2.Y = Half.FromBytes(value, startIndex + 2);
+            return h2;
         }
     }
 }

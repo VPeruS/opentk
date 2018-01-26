@@ -929,7 +929,7 @@ namespace OpenTK.Platform.SDL2
             {
                 lock (sync)
                 {
-                    if (Exists && value != is_cursor_grabbed)
+                    if (Exists)
                     {
                         SetCursorGrab(value);
                         is_cursor_grabbed = value;
@@ -948,7 +948,7 @@ namespace OpenTK.Platform.SDL2
             {
                 lock (sync)
                 {
-                    if (Exists && value != is_cursor_visible)
+                    if (Exists)
                     {
                         SetCursorVisible(value);
                         is_cursor_visible = value;

@@ -304,14 +304,21 @@ namespace Bind
                             p.CurrentType = param.GetAttribute("type", String.Empty).Trim();
                             p.Name = param.GetAttribute("name", String.Empty).Trim();
 
-                            p.ComputeSize = param.GetAttribute("count", String.Empty).Trim();
-
-                            int elementCount;
-                            if (Int32.TryParse(p.ComputeSize, out elementCount))
+                            string element_count = param.GetAttribute("elementcount", String.Empty).Trim();
+                            if (String.IsNullOrEmpty(element_count))
                             {
-                                p.ElementCount = elementCount;
+                                element_count = param.GetAttribute("count", String.Empty).Trim();
+                                if (!String.IsNullOrEmpty(element_count))
+                                {
+                                    int count;
+                                    if (Int32.TryParse(element_count, out count))
+                                    {
+                                        p.ElementCount = count;
+                                    }
+                                }
                             }
 
+                            p.ComputeSize = param.GetAttribute("count", String.Empty).Trim();
                             p.Flow = Parameter.GetFlowDirection(param.GetAttribute("flow", String.Empty).Trim());
 
                             d.Parameters.Add(p);

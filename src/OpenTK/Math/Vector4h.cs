@@ -640,11 +640,12 @@ namespace OpenTK
         /// <returns>The resulting Vector4.</returns>
         public static explicit operator Vector4(Vector4h h4)
         {
-            return new Vector4(
-                h4.X.ToSingle(),
-                h4.Y.ToSingle(),
-                h4.Z.ToSingle(),
-                h4.W.ToSingle());
+            Vector4 result = new Vector4();
+            result.X = h4.X.ToSingle();
+            result.Y = h4.Y.ToSingle();
+            result.Z = h4.Z.ToSingle();
+            result.W = h4.W.ToSingle();
+            return result;
         }
 
         /// <summary>Converts OpenTK.Half4 to OpenTK.Vector4d.</summary>
@@ -652,11 +653,12 @@ namespace OpenTK
         /// <returns>The resulting Vector4d.</returns>
         public static explicit operator Vector4d(Vector4h h4)
         {
-            return new Vector4d(
-                h4.X.ToSingle(),
-                h4.Y.ToSingle(),
-                h4.Z.ToSingle(),
-                h4.W.ToSingle());
+            Vector4d result = new Vector4d();
+            result.X = h4.X.ToSingle();
+            result.Y = h4.Y.ToSingle();
+            result.Z = h4.Z.ToSingle();
+            result.W = h4.W.ToSingle();
+            return result;
         }
 
         /// <summary>The size in bytes for an instance of the Half4 struct is 8.</summary>
@@ -748,11 +750,12 @@ namespace OpenTK
         /// <returns>A new Half4 instance.</returns>
         public static Vector4h FromBytes(byte[] value, int startIndex)
         {
-            return new Vector4h(
-                Half.FromBytes(value, startIndex),
-                Half.FromBytes(value, startIndex + 2),
-                Half.FromBytes(value, startIndex + 4),
-                Half.FromBytes(value, startIndex + 6));
+            Vector4h h4 = new Vector4h();
+            h4.X = Half.FromBytes(value, startIndex);
+            h4.Y = Half.FromBytes(value, startIndex + 2);
+            h4.Z = Half.FromBytes(value, startIndex + 4);
+            h4.W = Half.FromBytes(value, startIndex + 6);
+            return h4;
         }
     }
 }

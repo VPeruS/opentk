@@ -81,7 +81,7 @@ namespace OpenTK.Platform.Windows
         {
             XInputButtons dir = 0;
 
-            dir = XInputButtons.DPadUp | XInputButtons.DPadLeft;
+            dir =XInputButtons.DPadUp | XInputButtons.DPadLeft;
             if ((buttons & dir) == dir)
             {
                 return HatPosition.UpLeft;
@@ -381,8 +381,7 @@ namespace OpenTK.Platform.Windows
                 }
                 if (dll == IntPtr.Zero)
                 {
-                   Debug.Print("XInput was not found on this platform");
-                   return;
+                    throw new NotSupportedException("XInput was not found on this platform");
                 }
 
                 // Load the entry points we are interested in from that dll

@@ -11,7 +11,6 @@ open Fake.UserInputHelper
 open Fake.Testing
 open System
 open System.IO
-open System.Diagnostics
 
 // --------------------------------------------------------------------------------------
 // START TODO: Provide project-specific details below
@@ -79,10 +78,7 @@ let (|Fsproj|Csproj|Vbproj|) (projFileName:string) =
     | _                           -> failwith (sprintf "Project file %s not supported. Unknown project type." projFileName)
 
 
-let buildProjects =
-    !! "src/Generator.*/**.csproj"
-
-let runtimeProjects =
+let activeProjects =
     let xamarinFilter f =
         if isXamarinPlatform then
             f
@@ -92,13 +88,8 @@ let runtimeProjects =
             -- "**/OpenTK.iOS.csproj"
 
     !! "src/**/*.??proj"
-    ++ "tests/**/OpenTK.Tests*.??proj"
-    -- "src/Generator.*/**.csproj"
+    ++ "tests/**/OpenTK.Tests.fsproj"
     |> xamarinFilter
-
-let activeProjects =
-    Seq.concat [buildProjects; runtimeProjects]
-
 
 // Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
@@ -114,8 +105,7 @@ Target "AssemblyInfo" (fun _ ->
           Attribute.Version release.AssemblyVersion
           Attribute.FileVersion release.AssemblyVersion
           Attribute.CLSCompliant true
-          Attribute.Copyright copyright
-        ]
+          Attribute.Copyright copyright  ]
 
     let getProjectDetails projectPath =
         let projectName = System.IO.Path.GetFileNameWithoutExtension(projectPath)
@@ -125,7 +115,7 @@ Target "AssemblyInfo" (fun _ ->
           (getAssemblyInfoAttributes projectName)
         )
 
-    activeProjects
+    !! "src/**/*.??proj"
     |> Seq.map getProjectDetails
     |> Seq.iter (fun (projFileName, projectName, folderName, attributes) ->
         match projFileName with
@@ -152,27 +142,11 @@ Target "Clean" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
-// Build generator projects, and generate bindings if neccesary
-Target "GenerateBindings" (fun _ ->
-    if not (File.Exists(".bindingsGenerated")) then
-        buildProjects
-            |> MSBuildRelease "" "Build"
-            |> ignore
-        let bindingProcess = new Process()
-        bindingProcess.StartInfo.FileName <- Path.Combine("src", "Generator.Bind", "bin", "Release", "Bind.exe")
-        if bindingProcess.Start() then
-            bindingProcess.WaitForExit()
-            File.Create(".bindingsGenerated").Close()
-        else
-            failwith "Could not start Bind.exe"
-)
-
-// --------------------------------------------------------------------------------------
 // Build library & test project
 
 Target "Build" (fun _ ->
     activeProjects
-    |> MSBuildRelease "" "Build"
+    |> MSBuildRelease "" "Rebuild"
     |> ignore
 )
 
@@ -218,7 +192,6 @@ Target "All" DoNothing
 
 "Clean"
   ==> "AssemblyInfo"
-  ==> "GenerateBindings"
   ==> "Build"
   ==> "CopyBinaries"
   ==> "RunTests"

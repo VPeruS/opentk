@@ -108,6 +108,7 @@ namespace Bind.Structures
         /// </summary>
         /// <param name="c">The Constant to translate</param>
         /// <param name="enums">The list of enums to check.</param>
+        /// <param name="auxEnums">The list of auxilliary enums to check.</param>
         /// <returns>True if the reference was found; false otherwise.</returns>
         public static bool TranslateConstantWithReference(Constant c, EnumCollection enums)
         {

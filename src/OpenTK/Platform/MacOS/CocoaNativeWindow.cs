@@ -137,7 +137,6 @@ namespace OpenTK.Platform.MacOS
         }
 
         private CocoaWindowInfo windowInfo;
-
         private IntPtr windowClass;
         private IntPtr trackingArea;
         private IntPtr current_icon_handle;
@@ -1260,16 +1259,9 @@ namespace OpenTK.Platform.MacOS
 
         public override bool CursorGrabbed
         {
-            get
-            {
-                return cursorGrabbed;
-            }
+            get { return cursorGrabbed; }
             set
             {
-                if (value == cursorGrabbed)
-                {
-                    return;
-                }
                 SetCursorGrab(value);
                 cursorGrabbed = value;
             }
@@ -1277,16 +1269,9 @@ namespace OpenTK.Platform.MacOS
 
         public override bool CursorVisible
         {
-            get
-            {
-                return cursorVisible;
-            }
+            get { return cursorVisible; }
             set
             {
-                if (value == cursorVisible)
-                {
-                    return;
-                }
                 cursorVisible = value;
                 // Another approach will be use of hide and unhide methods
                 // of NSCursor

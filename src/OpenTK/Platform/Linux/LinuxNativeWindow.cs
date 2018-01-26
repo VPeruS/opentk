@@ -376,10 +376,7 @@ namespace OpenTK.Platform.Linux
 
         public override bool CursorGrabbed
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
             set
             {
                 if (value == false)

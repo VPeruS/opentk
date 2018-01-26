@@ -310,10 +310,7 @@ namespace OpenTK
         /// <param name="result">Result of operation.</param>
         public static void Add(ref Vector4d a, ref Vector4d b, out Vector4d result)
         {
-            result.X = a.X + b.X;
-            result.Y = a.Y + b.Y;
-            result.Z = a.Z + b.Z;
-            result.W = a.W + b.W;
+            result = new Vector4d(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
         }
 
         /// <summary>
@@ -336,10 +333,7 @@ namespace OpenTK
         /// <param name="result">Result of subtraction</param>
         public static void Subtract(ref Vector4d a, ref Vector4d b, out Vector4d result)
         {
-            result.X = a.X - b.X;
-            result.Y = a.Y - b.Y;
-            result.Z = a.Z - b.Z;
-            result.W = a.W - b.W;
+            result = new Vector4d(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
         }
 
         /// <summary>
@@ -362,10 +356,7 @@ namespace OpenTK
         /// <param name="result">Result of the operation.</param>
         public static void Multiply(ref Vector4d vector, double scale, out Vector4d result)
         {
-            result.X = vector.X * scale;
-            result.Y = vector.Y * scale;
-            result.Z = vector.Z * scale;
-            result.W = vector.W * scale;
+            result = new Vector4d(vector.X * scale, vector.Y * scale, vector.Z * scale, vector.W * scale);
         }
 
         /// <summary>
@@ -388,10 +379,7 @@ namespace OpenTK
         /// <param name="result">Result of the operation.</param>
         public static void Multiply(ref Vector4d vector, ref Vector4d scale, out Vector4d result)
         {
-            result.X = vector.X * scale.X;
-            result.Y = vector.Y * scale.Y;
-            result.Z = vector.Z * scale.Z;
-            result.W = vector.W * scale.W;
+            result = new Vector4d(vector.X * scale.X, vector.Y * scale.Y, vector.Z * scale.Z, vector.W * scale.W);
         }
 
         /// <summary>
@@ -440,10 +428,7 @@ namespace OpenTK
         /// <param name="result">Result of the operation.</param>
         public static void Divide(ref Vector4d vector, ref Vector4d scale, out Vector4d result)
         {
-            result.X = vector.X / scale.X;
-            result.Y = vector.Y / scale.Y;
-            result.Z = vector.Z / scale.Z;
-            result.W = vector.W / scale.W;
+            result = new Vector4d(vector.X / scale.X, vector.Y / scale.Y, vector.Z / scale.Z, vector.W / scale.W);
         }
 
         /// <summary>
@@ -840,10 +825,7 @@ namespace OpenTK
             Quaterniond.Multiply(ref quat, ref v, out t);
             Quaterniond.Multiply(ref t, ref i, out v);
 
-            result.X = v.X;
-            result.Y = v.Y;
-            result.Z = v.Z;
-            result.W = v.W;
+            result = new Vector4d(v.X, v.Y, v.Z, v.W);
         }
 
         /// <summary>

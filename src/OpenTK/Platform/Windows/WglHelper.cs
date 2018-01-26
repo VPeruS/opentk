@@ -94,7 +94,7 @@ namespace OpenTK.Platform.Windows
             get { return sync; }
         }
 
-        internal static IntPtr GetAddress(string function_string)
+        private IntPtr GetAddress(string function_string)
         {
             IntPtr address = Wgl.GetProcAddress(function_string);
             if (!IsValid(address))
