@@ -1705,9 +1705,16 @@ namespace OpenTK.Platform.X11
 
         public override bool CursorGrabbed
         {
-            get { return cursor_grabbed; }
+            get
+            {
+                return cursor_grabbed;
+            }
             set
             {
+                if (value == cursor_grabbed)
+                {
+                    return;
+                }
                 using (new XLock(window.Display))
                 {
                     SetCursorGrab(value);

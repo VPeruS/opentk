@@ -1260,9 +1260,16 @@ namespace OpenTK.Platform.MacOS
 
         public override bool CursorGrabbed
         {
-            get { return cursorGrabbed; }
+            get
+            {
+                return cursorGrabbed;
+            }
             set
             {
+                if (value == cursorGrabbed)
+                {
+                    return;
+                }
                 SetCursorGrab(value);
                 cursorGrabbed = value;
             }
